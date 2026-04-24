@@ -7,6 +7,9 @@ on:
       - scripts/check_images.py
       - .github/workflows/check-images.yml
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 permissions:
   contents: read
 
