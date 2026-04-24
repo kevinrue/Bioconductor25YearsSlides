@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bioconductor – 25 Years</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      background: #f4f8fb;
+      color: #1a1a2e;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── Banner ── */
+    .banner {
+      background: #1a3c5e;
+      color: #fff;
+      text-align: center;
+      padding: 14px 20px;
+      font-size: 1rem;
+      line-height: 1.5;
+    }
+    .banner a {
+      color: #7ecfff;
+      font-weight: bold;
+      text-decoration: none;
+    }
+    .banner a:hover { text-decoration: underline; }
+
+    /* ── Page title ── */
+    h1 {
+      text-align: center;
+      margin: 28px 16px 8px;
+      font-size: 1.8rem;
+      color: #1a3c5e;
+    }
+    .subtitle {
+      text-align: center;
+      color: #555;
+      margin-bottom: 28px;
+      font-size: 0.95rem;
+    }
+
+    /* ── Carousel wrapper ── */
+    .carousel-wrapper {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 0 16px 40px;
+    }
+
+    .carousel {
+      position: relative;
+      width: 100%;
+      max-width: 900px;
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 4px 18px rgba(0,0,0,0.12);
+      overflow: hidden;
+    }
+
+    /* ── Slides ── */
+    .slide {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      padding: 24px 16px 16px;
+      animation: fadeIn 0.4s ease;
+    }
+    .slide.active { display: flex; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
+
+    .slide img {
+      max-width: 100%;
+      max-height: 70vh;
+      object-fit: contain;
+      border-radius: 6px;
+    }
+
+    .slide .caption {
+      margin-top: 10px;
+      font-size: 0.82rem;
+      color: #888;
+      overflow-wrap: break-word;
+    }
+
+    /* ── Empty / error state ── */
+    .empty-state {
+      padding: 60px 20px;
+      text-align: center;
+      color: #666;
+      font-size: 1rem;
+      line-height: 1.8;
+    }
+
+    /* ── Controls ── */
+    .controls {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      margin-top: 18px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      background: #1a3c5e;
+      color: #fff;
+      border: none;
+      padding: 10px 22px;
+      border-radius: 5px;
+      font-size: 1.1rem;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .btn:hover { background: #2a6496; }
+    .btn:disabled { background: #aaa; cursor: default; }
+
+    .counter {
+      font-size: 0.95rem;
+      color: #555;
+      min-width: 60px;
+      text-align: center;
+    }
+
+    /* ── Dots ── */
+    .dots {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 14px;
+      max-width: 900px;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #bbb;
+      cursor: pointer;
+      border: none;
+      padding: 0;
+      transition: background 0.2s;
+    }
+    .dot.active { background: #1a3c5e; }
+    .dot:hover  { background: #2a6496; }
+
+    /* ── Autoplay toggle ── */
+    .autoplay-btn {
+      background: none;
+      border: 1px solid #1a3c5e;
+      color: #1a3c5e;
+      padding: 6px 14px;
+      border-radius: 5px;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s;
+      margin-top: 10px;
+    }
+    .autoplay-btn:hover {
+      background: #1a3c5e;
+      color: #fff;
+    }
+
+    footer {
+      text-align: center;
+      padding: 16px;
+      font-size: 0.8rem;
+      color: #999;
+    }
+    footer a { color: #1a3c5e; }
+  </style>
+</head>
+<body>
+
+  <!-- ── Contribution banner ── -->
+  <div class="banner">
+    🎉 Celebrating 25 Years of Bioconductor! &nbsp;|&nbsp;
+    Contribute your photos at
+    <a href="https://github.com/kevinrue/Bioconductor25YearsSlides"
+       target="_blank" rel="noopener">
+      github.com/kevinrue/Bioconductor25YearsSlides
+    </a>
+  </div>
+
+  <h1>Bioconductor – 25 Years</h1>
+  <p class="subtitle">A community photo slideshow</p>
+
+  <!-- ── Carousel ── -->
+  <div class="carousel-wrapper">
+    <div class="carousel" id="carousel">
+      <div class="empty-state" id="emptyState">Loading photos…</div>
+    </div>
+
+    <div class="controls" id="controls" style="display:none;">
+      <button class="btn" id="prevBtn" onclick="changeSlide(-1)" title="Previous">&#8249;</button>
+      <span class="counter" id="counter"></span>
+      <button class="btn" id="nextBtn" onclick="changeSlide(1)" title="Next">&#8250;</button>
+    </div>
+
+    <div class="dots" id="dots"></div>
+
+    <button class="autoplay-btn" id="autoplayBtn"
+            onclick="toggleAutoplay()" style="display:none;">
+      ⏸ Pause
+    </button>
+  </div>
+
+  <footer>
+    Photos &copy; their respective contributors &nbsp;|&nbsp;
+    <a href="https://bioconductor.org" target="_blank" rel="noopener">bioconductor.org</a>
+  </footer>
+
+<script>
+(function () {
+  'use strict';
+
+  const AUTOPLAY_DELAY = 5000; // ms between slides
+
+  let slides      = [];
+  let currentIdx  = 0;
+  let autoplaying = true;
+  let timer       = null;
+
+  // ── Fetch photo list and build slides ───────────────────────────────────
+  fetch('photos.json')
+    .then(r => {
+      if (!r.ok) throw new Error('photos.json not found');
+      return r.json();
+    })
+    .then(photos => {
+      const carousel = document.getElementById('carousel');
+      const dotsEl   = document.getElementById('dots');
+
+      if (!photos || photos.length === 0) {
+        carousel.innerHTML =
+          '<div class="empty-state">' +
+          'No photos yet.<br>Be the first to ' +
+          '<a href="https://github.com/kevinrue/Bioconductor25YearsSlides">contribute</a>!' +
+          '</div>';
+        return;
+      }
+
+      carousel.innerHTML = '';
+
+      photos.forEach((filename, i) => {
+        // Slide
+        const slide = document.createElement('div');
+        slide.className = 'slide' + (i === 0 ? ' active' : '');
+
+        const img = document.createElement('img');
+        img.src = 'photos/' + encodeURIComponent(filename);
+        img.alt = filename;
+
+        const caption = document.createElement('div');
+        caption.className = 'caption';
+        caption.textContent = filename;
+
+        slide.appendChild(img);
+        slide.appendChild(caption);
+        carousel.appendChild(slide);
+
+        // Dot
+        const dot = document.createElement('button');
+        dot.className = 'dot' + (i === 0 ? ' active' : '');
+        dot.setAttribute('aria-label', 'Go to slide ' + (i + 1));
+        dot.addEventListener('click', () => goToSlide(i));
+        dotsEl.appendChild(dot);
+      });
+
+      slides = carousel.querySelectorAll('.slide');
+      updateCounter();
+
+      document.getElementById('controls').style.display  = 'flex';
+      document.getElementById('autoplayBtn').style.display = '';
+      startTimer();
+    })
+    .catch(err => {
+      console.error(err);
+      document.getElementById('carousel').innerHTML =
+        '<div class="empty-state">Could not load photos. ' +
+        'Please try again later.</div>';
+    });
+
+  // ── Navigation ─────────────────────────────────────────────────────────
+  window.changeSlide = function (direction) {
+    goToSlide((currentIdx + direction + slides.length) % slides.length);
+  };
+
+  function goToSlide(n) {
+    slides[currentIdx].classList.remove('active');
+    document.querySelectorAll('.dot')[currentIdx].classList.remove('active');
+    currentIdx = n;
+    slides[currentIdx].classList.add('active');
+    document.querySelectorAll('.dot')[currentIdx].classList.add('active');
+    updateCounter();
+    if (autoplaying) resetTimer();
+  }
+
+  function updateCounter() {
+    const el = document.getElementById('counter');
+    if (el && slides.length > 0) {
+      el.textContent = (currentIdx + 1) + ' / ' + slides.length;
+    }
+  }
+
+  // ── Autoplay ───────────────────────────────────────────────────────────
+  function startTimer() {
+    timer = setInterval(() => window.changeSlide(1), AUTOPLAY_DELAY);
+  }
+
+  function resetTimer() {
+    clearInterval(timer);
+    startTimer();
+  }
+
+  window.toggleAutoplay = function () {
+    const btn = document.getElementById('autoplayBtn');
+    if (autoplaying) {
+      clearInterval(timer);
+      autoplaying = false;
+      btn.textContent = '▶ Play';
+    } else {
+      autoplaying = true;
+      btn.textContent = '⏸ Pause';
+      startTimer();
+    }
+  };
+
+  // Pause when the tab is hidden, resume when visible
+  document.addEventListener('visibilitychange', () => {
+    if (slides.length === 0) return;
+    if (document.hidden) {
+      clearInterval(timer);
+    } else if (autoplaying) {
+      startTimer();
+    }
+  });
+}());
+</script>
+</body>
+</html>

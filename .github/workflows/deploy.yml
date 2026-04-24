@@ -1,0 +1,75 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Allow only one concurrent deployment; cancel any in-progress run.
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Build site
+        run: |
+          python3 - <<'PYEOF'
+          import os, json, shutil
+
+          EXTENSIONS = {'.jpg', '.jpeg', '.png', '.gif', '.webp'}
+          PHOTOS_SRC = 'photos'
+          SITE_DIR   = '_site'
+          SITE_PHOTOS = os.path.join(SITE_DIR, 'photos')
+
+          os.makedirs(SITE_PHOTOS, exist_ok=True)
+
+          # Collect and sort image files
+          photos = sorted(
+              f for f in os.listdir(PHOTOS_SRC)
+              if os.path.splitext(f)[1].lower() in EXTENSIONS
+          )
+
+          # Copy images to _site/photos/
+          for filename in photos:
+              shutil.copy(
+                  os.path.join(PHOTOS_SRC, filename),
+                  os.path.join(SITE_PHOTOS, filename),
+              )
+
+          # Write photos.json
+          with open(os.path.join(SITE_DIR, 'photos.json'), 'w') as fh:
+              json.dump(photos, fh)
+
+          # Copy index.html
+          shutil.copy('index.html', os.path.join(SITE_DIR, 'index.html'))
+
+          print(f'Site built with {len(photos)} photo(s): {photos}')
+          PYEOF
+
+      - name: Setup GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: '_site'
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

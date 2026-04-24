@@ -1,0 +1,90 @@
+name: Check photo sizes
+
+on:
+  pull_request:
+    paths:
+      - 'photos/**'
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0        # full history needed for git diff
+
+      - name: Install Pillow
+        run: pip install --quiet Pillow
+
+      - name: Check photo dimensions and file size
+        env:
+          BASE_REF: ${{ github.base_ref }}
+        run: |
+          git fetch --quiet origin "$BASE_REF"
+          python3 - <<'PYEOF'
+          import os, sys, subprocess
+          from PIL import Image
+
+          MAX_FILE_BYTES  = 5 * 1024 * 1024   # 5 MB
+          MAX_DIMENSION   = 3000               # px (width or height)
+          EXTENSIONS      = {'.jpg', '.jpeg', '.png', '.gif', '.webp'}
+          BASE_REF        = os.environ['BASE_REF']
+
+          # ── Find added / modified photo files in this PR ──────────────────
+          result = subprocess.run(
+              ['git', 'diff', '--name-only', '--diff-filter=AM',
+               f'origin/{BASE_REF}', 'HEAD', '--', 'photos/'],
+              capture_output=True, text=True, check=True,
+          )
+
+          changed = [
+              f for f in result.stdout.splitlines()
+              if os.path.splitext(f)[1].lower() in EXTENSIONS
+          ]
+
+          if not changed:
+              print('No photo files added or modified in this PR.')
+              sys.exit(0)
+
+          print(f'Checking {len(changed)} photo(s)…\n')
+
+          errors = []
+          for filepath in changed:
+              filename = os.path.basename(filepath)
+
+              # File size check
+              size = os.path.getsize(filepath)
+              if size > MAX_FILE_BYTES:
+                  errors.append(
+                      f'{filename}: file size {size / 1024 / 1024:.2f} MB '
+                      f'exceeds the {MAX_FILE_BYTES // 1024 // 1024} MB limit.'
+                  )
+
+              # Image dimension check
+              try:
+                  with Image.open(filepath) as img:
+                      w, h = img.size
+                  if w > MAX_DIMENSION or h > MAX_DIMENSION:
+                      errors.append(
+                          f'{filename}: dimensions {w}×{h} px — '
+                          f'neither width nor height may exceed {MAX_DIMENSION} px.'
+                      )
+              except Exception as exc:
+                  errors.append(f'{filename}: could not read image — {exc}')
+
+          if errors:
+              print('❌  Photo check FAILED:\n')
+              for msg in errors:
+                  print(f'   • {msg}')
+              print(
+                  '\nPlease resize your photo(s) before re-submitting.\n'
+                  'Tip: https://squoosh.app is a free, browser-based tool.'
+              )
+              sys.exit(1)
+
+          print(f'✅  All {len(changed)} photo(s) passed size checks.')
+          PYEOF
