@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bioconductor 25 Years Photo Carousel</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="banner">
+      <p>
+        Help build this shared memory: <a id="contribute-link" href="#">contribute a photo via pull request</a>
+      </p>
+    </header>
+
+    <main class="page">
+      <h1>Bioconductor 25 Years</h1>
+
+      <section class="carousel" aria-label="Photo carousel">
+        <div class="frame">
+          <img id="carousel-image" alt="Carousel image" />
+        </div>
+
+        <div class="controls">
+          <button id="prev" type="button" aria-label="Previous image">Previous</button>
+          <span id="counter" aria-live="polite"></span>
+          <button id="next" type="button" aria-label="Next image">Next</button>
+        </div>
+
+        <p id="filename" class="filename"></p>
+        <p id="status" class="status" aria-live="polite"></p>
+      </section>
+    </main>
+
+    <script src="script.js"></script>
+  </body>
+</html>

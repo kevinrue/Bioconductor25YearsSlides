@@ -1,0 +1,14 @@
+# Generated manifest file
+photos/manifest.json
+
+# Local Python version manager file
+.python-version
+
+# Python cache artifacts
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# OS-specific junk files
+.DS_Store
+Thumbs.db

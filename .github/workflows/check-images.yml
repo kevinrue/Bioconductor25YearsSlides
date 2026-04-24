@@ -1,0 +1,35 @@
+name: Check Contributed Images
+
+on:
+  pull_request:
+    paths:
+      - photos/**
+      - scripts/check_images.py
+      - .github/workflows/check-images.yml
+
+permissions:
+  contents: read
+
+jobs:
+  validate-images:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install Pillow
+
+      - name: Validate image size and resolution
+        run: |
+          python scripts/check_images.py \
+            --photos-dir photos \
+            --max-width 5000 \
+            --max-height 5000 \
+            --max-bytes 10000000
