@@ -24,12 +24,19 @@
       <section class="carousel" aria-label="Photo carousel">
         <div class="frame">
           <img id="carousel-image" alt="Carousel image" />
+          <div id="fs-filename" class="fs-filename"></div>
+        </div>
+
+        <div class="progress-bar">
+          <div class="progress-fill" id="progress-fill"></div>
         </div>
 
         <div class="controls">
           <button id="prev" type="button" aria-label="Previous image">Previous</button>
           <span id="counter" aria-live="polite"></span>
+          <button id="pause-btn" type="button" aria-label="Pause presentation">Pause</button>
           <button id="next" type="button" aria-label="Next image">Next</button>
+          <button id="fullscreen-btn" type="button" aria-label="Enter fullscreen">Fullscreen</button>
         </div>
 
         <p id="filename" class="filename"></p>
