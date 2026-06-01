@@ -66,3 +66,14 @@ On pushes to `main`, the deploy workflow:
 3. Deploys to GitHub Pages
 
 After enabling Pages in repository settings, your live carousel will update automatically on new pushes.
+
+## Credits
+
+Photos were obtained from the following sources:
+
+- The [Bioconductor blog](https://blog.bioconductor.org/)
+- [Kevin Rue-Albrecht](https://github.com/kevinrue)
+- [Robert Castelo](https://github.com/rcastelo)
+- [Davide Risso](https://github.com/drisso)
+- [Wolfgang Huber](https://github.com/wolfganghuber)
+
