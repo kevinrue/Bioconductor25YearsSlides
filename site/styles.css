@@ -151,6 +151,11 @@ button:hover {
   display: none;
 }
 
+/* ── Fullscreen title banner (hidden by default) ── */
+.fs-title {
+  display: none;
+}
+
 /* ── Fullscreen carousel layout (driven by JS class) ── */
 .carousel.fullscreen-active {
   position: relative;
@@ -201,6 +206,22 @@ button:hover {
 .carousel.fullscreen-active .filename,
 .carousel.fullscreen-active .status {
   display: none;
+}
+
+.carousel.fullscreen-active .fs-title {
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  padding: 0.65rem 1.5rem;
+  background: rgba(0, 0, 0, 0.55);
+  color: #fff;
+  font-size: 2rem;
+  font-weight: 700;
+  text-align: center;
+  pointer-events: none;
+  z-index: 1;
 }
 
 .carousel.fullscreen-active .fs-filename {
